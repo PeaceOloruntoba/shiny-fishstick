@@ -1,4 +1,5 @@
-import { ArrowDown, ArrowRight, Check, Clock3, ShieldCheck, Sparkles, Star } from "lucide-react";
+import { ArrowDown, ArrowRight, Check, Clock3, Sparkles, Star } from "lucide-react";
+import { EarlyAccessForm } from "@/components/early-access-form";
 
 const services = [
   {
@@ -123,7 +124,7 @@ export default function HomePage() {
         <div className="how-cta"><span>Less to manage. More room to live.</span><a className="button button-dark" href="#booking">Get early access <ArrowRight size={16} /></a></div>
       </section>
 
-      <section className="booking-band" id="booking"><div className="booking-inner wrap"><div><div className="eyebrow"><span className="eyebrow-line" /> Be first to know</div><h2>A little more ease<br />is on its way.</h2><p>We’re preparing our first neighbourhood launch. Leave your details and we’ll share updates as service areas and booking dates are confirmed.</p></div><form className="interest-form" action="mailto:hello@homeops.ng" method="get"><label htmlFor="email">Your email address</label><div className="input-row"><input id="email" name="subject" type="email" placeholder="you@example.com" required /><button className="button button-dark" type="submit">Keep me posted <ArrowRight size={16} /></button></div><small>We’ll only use your email for HomeOps launch updates.</small></form></div><div className="booking-spark">✳</div></section>
+      <section className="booking-band" id="booking"><div className="booking-inner wrap"><div><div className="eyebrow"><span className="eyebrow-line" /> Be first to know</div><h2>A little more ease<br />is on its way.</h2><p>We’re preparing our first neighbourhood launch. Leave your details and we’ll share updates as service areas and booking dates are confirmed.</p></div><EarlyAccessForm /></div><div className="booking-spark">✳</div></section>
 
       <footer className="site-footer wrap"><a className="brand footer-brand" href="#top"><span className="brand-mark"><span /><span /><span /><span /></span><span>homeops<span className="brand-period">.</span></span></a><span className="footer-note">A more considered kind of home care.</span><div className="footer-links"><a href="#services">Services</a><a href="#how-it-works">How it works</a><a href="mailto:hello@homeops.ng">Get in touch</a></div><span className="copyright">© 2026 HomeOps. Name is a working title.</span></footer>
     </main>
