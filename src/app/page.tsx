@@ -52,8 +52,9 @@ export default function HomePage() {
           <a href="#services">Our services</a>
           <a href="#how-it-works">How it works</a>
           <a href="#our-promise">Our approach</a>
+          <a href="/login">Sign in</a>
         </nav>
-        <a className="button button-dark header-cta" href="#booking">Get early access <ArrowRight size={16} /></a>
+        <a className="button button-dark header-cta" href="/services">Explore services <ArrowRight size={16} /></a>
       </header>
 
       <section className="hero wrap" id="top">
@@ -62,7 +63,7 @@ export default function HomePage() {
           <h1>Make room for<br /><span>what matters.</span></h1>
           <p className="hero-intro">A well-cared-for home changes how the whole day feels. We’re making it easier to get there, one thoughtful clean at a time.</p>
           <div className="hero-actions">
-            <a className="button button-coral" href="#booking">Find your kind of clean <ArrowRight size={17} /></a>
+            <a className="button button-coral" href="/services">Find your kind of clean <ArrowRight size={17} /></a>
             <a className="text-link" href="#how-it-works">See how it works <ArrowDown size={15} /></a>
           </div>
           <div className="hero-proof">
@@ -97,7 +98,7 @@ export default function HomePage() {
         <div className="service-grid">
           {services.map((service) => {
             const Icon = service.icon;
-            return <a className={`service-card ${service.tone}`} href="#booking" key={service.number}>
+            return <a className={`service-card ${service.tone}`} href="/services" key={service.number}>
               <div className="service-card-top"><span>{service.number} / HOME CARE</span><span className="service-icon"><Icon size={19} strokeWidth={1.6} /></span></div>
               <div className="service-illustration"><div className="illustration-shape"><span /><i /><b /></div><span className="service-spark">✳</span></div>
               <div className="service-card-bottom"><div><h3>{service.title}</h3><p>{service.description}</p></div><span className="round-arrow"><ArrowRight size={17} /></span></div>
@@ -126,7 +127,7 @@ export default function HomePage() {
 
       <section className="booking-band" id="booking"><div className="booking-inner wrap"><div><div className="eyebrow"><span className="eyebrow-line" /> Be first to know</div><h2>A little more ease<br />is on its way.</h2><p>We’re preparing our first neighbourhood launch. Leave your details and we’ll share updates as service areas and booking dates are confirmed.</p></div><EarlyAccessForm /></div><div className="booking-spark">✳</div></section>
 
-      <footer className="site-footer wrap"><a className="brand footer-brand" href="#top"><span className="brand-mark"><span /><span /><span /><span /></span><span>homeops<span className="brand-period">.</span></span></a><span className="footer-note">A more considered kind of home care.</span><div className="footer-links"><a href="#services">Services</a><a href="#how-it-works">How it works</a><a href="mailto:hello@homeops.ng">Get in touch</a></div><span className="copyright">© 2026 HomeOps. Name is a working title.</span></footer>
+      <footer className="site-footer wrap"><a className="brand footer-brand" href="#top"><span className="brand-mark"><span /><span /><span /><span /></span><span>homeops<span className="brand-period">.</span></span></a><span className="footer-note">A more considered kind of home care.</span><div className="footer-links"><a href="/services">Services</a><a href="#how-it-works">How it works</a><a href="#booking">Get in touch</a><a href="/login">Sign in</a></div><span className="copyright">© 2026 HomeOps. Name is a working title.</span></footer>
     </main>
   );
 }

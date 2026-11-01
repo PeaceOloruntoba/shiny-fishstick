@@ -2,6 +2,8 @@
 
 HomeOps is a single Next.js application for the public site, client experience, worker portal, and operations console.
 
+The current implemented product slice includes the marketing landing page, public service catalogue, email/password client accounts, and booking requests with server/database price validation. Booking requests remain pending payment; live checkout, worker dispatch, and staff operations are not connected yet.
+
 ## Local development
 
 Use npm for dependency management and scripts:
@@ -11,7 +13,7 @@ npm install
 npm run dev
 ```
 
-Copy `.env.example` to `.env.local` and set the Supabase project URL and anon key to enable early-access signup storage. Apply the SQL files in `supabase/migrations/` to that Supabase project. Until then, the landing page remains available and the signup form reports that signups are not open.
+Copy `.env.example` to `.env.local` and set the Supabase project URL, publishable key (or legacy anon key), and public site URL. In Supabase Auth, allow the exact `${NEXT_PUBLIC_SITE_URL}/auth/callback` URL for email confirmation. Apply the SQL files in `supabase/migrations/` in order. Until then, the landing page remains available and data-backed signup and booking flows stay unavailable. The catalogue is intentionally empty until approved package prices and launch zones are entered; no sample price is treated as live pricing.
 
 Available scripts:
 
