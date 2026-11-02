@@ -107,20 +107,31 @@ alter table public.package_zones enable row level security;
 alter table public.service_addresses enable row level security;
 alter table public.bookings enable row level security;
 
+drop policy if exists "Clients read own profile" on public.client_profiles;
 create policy "Clients read own profile" on public.client_profiles for select to authenticated using (user_id = (select auth.uid()));
+drop policy if exists "Clients create own profile" on public.client_profiles;
 create policy "Clients create own profile" on public.client_profiles for insert to authenticated with check (user_id = (select auth.uid()));
+drop policy if exists "Clients update own profile" on public.client_profiles;
 create policy "Clients update own profile" on public.client_profiles for update to authenticated using (user_id = (select auth.uid())) with check (user_id = (select auth.uid()));
 
+drop policy if exists "Read active service zones" on public.service_zones;
 create policy "Read active service zones" on public.service_zones for select to anon, authenticated using (is_active);
+drop policy if exists "Read active packages" on public.service_packages;
 create policy "Read active packages" on public.service_packages for select to anon, authenticated using (is_active);
+drop policy if exists "Read active package versions" on public.service_package_versions;
 create policy "Read active package versions" on public.service_package_versions for select to anon, authenticated using (is_active);
+drop policy if exists "Read package zone links" on public.package_zones;
 create policy "Read package zone links" on public.package_zones for select to anon, authenticated using (
   exists (select 1 from public.service_package_versions v join public.service_packages p on p.id = v.package_id where v.id = package_version_id and v.is_active and p.is_active)
 );
 
+drop policy if exists "Clients read own addresses" on public.service_addresses;
 create policy "Clients read own addresses" on public.service_addresses for select to authenticated using (client_id = (select auth.uid()));
+drop policy if exists "Clients update own addresses" on public.service_addresses;
 create policy "Clients update own addresses" on public.service_addresses for update to authenticated using (client_id = (select auth.uid())) with check (client_id = (select auth.uid()));
+drop policy if exists "Clients delete own addresses" on public.service_addresses;
 create policy "Clients delete own addresses" on public.service_addresses for delete to authenticated using (client_id = (select auth.uid()));
+drop policy if exists "Clients read own bookings" on public.bookings;
 create policy "Clients read own bookings" on public.bookings for select to authenticated using (client_id = (select auth.uid()));
 
 revoke all on public.client_profiles, public.service_zones, public.service_packages, public.service_package_versions, public.package_zones, public.service_addresses, public.bookings from anon, authenticated;
@@ -166,7 +177,7 @@ begin
   end if;
   if p_scheduled_for < now() + interval '2 hours' then raise exception 'Choose a time at least two hours from now' using errcode = '22023'; end if;
 
-  select v.price_kobo, v.duration_minutes, p.name, v.version
+  select v.price_kobo, v.duration_minutes, v.display_name, v.version
     into v_price, v_duration, v_package_name, v_version
     from public.service_package_versions v
     join public.service_packages p on p.id = v.package_id

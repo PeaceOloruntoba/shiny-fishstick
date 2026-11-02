@@ -19,7 +19,7 @@ export async function getBookingOptions(): Promise<BookingOption[]> {
     const supabase = await createSupabaseServerClient();
     const { data: versions, error } = await supabase
       .from("service_package_versions")
-      .select("id,version,price_kobo,duration_minutes,inclusions,exclusions,package:service_packages!inner(name,description,is_active)")
+      .select("id,version,display_name,description,price_kobo,duration_minutes,inclusions,exclusions,package:service_packages!inner(is_active)")
       .eq("is_active", true)
       .eq("package.is_active", true);
 
@@ -37,8 +37,8 @@ export async function getBookingOptions(): Promise<BookingOption[]> {
       const eligibleIds = (links ?? []).filter((link) => link.package_version_id === item.id).map((link) => link.zone_id);
       return [{
         id: item.id,
-        packageName: pkg.name,
-        description: pkg.description,
+        packageName: item.display_name,
+        description: item.description,
         version: item.version,
         priceKobo: Number(item.price_kobo),
         durationMinutes: item.duration_minutes,
