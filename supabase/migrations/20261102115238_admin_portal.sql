@@ -209,7 +209,11 @@ begin
   if char_length(coalesce(p_description,'')) > 1000 then raise exception 'Description is too long' using errcode = '22023'; end if;
   if p_price_kobo is null or p_price_kobo not between 1 and 9007199254740991 then raise exception 'Enter a valid price in kobo' using errcode = '22023'; end if;
   if p_duration_minutes is null or p_duration_minutes not between 30 and 1440 then raise exception 'Duration must be between 30 and 1440 minutes' using errcode = '22023'; end if;
-  if coalesce(cardinality(p_zone_ids),0) = 0 or cardinality(p_zone_ids) <> (select count(distinct z) from unnest(p_zone_ids) z) then raise exception 'Select one or more unique service zones' using errcode = '22023'; end if;
+  if coalesce(cardinality(p_zone_ids),0) = 0 or cardinality(p_zone_ids) <> (select count(distinct zone_id) from unnest(p_zone_ids) as input_zone(zone_id)) then raise exception 'Select one or more unique service zones' using errcode = '22023'; end if;
+  if cardinality(coalesce(p_inclusions,array[]::text[])) > 30 or cardinality(coalesce(p_exclusions,array[]::text[])) > 30
+    or exists (select 1 from unnest(coalesce(p_inclusions,array[]::text[]) || coalesce(p_exclusions,array[]::text[])) as item(value) where char_length(value) > 200) then
+    raise exception 'Use up to 30 inclusion and exclusion items, each 200 characters or fewer' using errcode = '22023';
+  end if;
   select count(*) into v_zone_count from public.service_zones z where z.id = any(p_zone_ids);
   if v_zone_count <> cardinality(p_zone_ids) then raise exception 'One or more service zones do not exist' using errcode = '22023'; end if;
   if coalesce(p_publish,false) and (select count(*) from public.service_zones where id = any(p_zone_ids) and is_active) <> cardinality(p_zone_ids) then
@@ -229,7 +233,7 @@ begin
   insert into public.service_package_versions(package_id,version,price_kobo,duration_minutes,inclusions,exclusions,is_active,display_name,description)
   values (v_package_id,v_version,p_price_kobo,p_duration_minutes,to_jsonb(coalesce(p_inclusions,array[]::text[])),to_jsonb(coalesce(p_exclusions,array[]::text[])),coalesce(p_publish,false),btrim(p_name),coalesce(btrim(p_description),''))
   returning id into v_version_id;
-  insert into public.package_zones(package_version_id,zone_id) select v_version_id,z from unnest(p_zone_ids) z;
+  insert into public.package_zones(package_version_id,zone_id) select v_version_id,zone_id from unnest(p_zone_ids) as input_zone(zone_id);
   insert into public.admin_audit_events(actor_id,action,entity_type,entity_id,details)
   values ((select auth.uid()),case when coalesce(p_publish,false) then 'SERVICE_PACKAGE_PUBLISHED' else 'SERVICE_PACKAGE_DRAFTED' end,'SERVICE_PACKAGE',v_package_id,jsonb_build_object('version',v_version,'price_kobo',p_price_kobo,'duration_minutes',p_duration_minutes,'zones',p_zone_ids));
   return v_version_id;

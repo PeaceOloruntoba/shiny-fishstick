@@ -10,11 +10,13 @@ The workflow at `.github/workflows/supabase-migrations.yml` applies pending SQL 
 
 The workflow checks that all three are present, serializes migration runs, links the Supabase CLI to the project, and runs `supabase db push`. It does not run on feature branches; merge the migration to `master` or `main` to deploy it. The CLI migration history makes repeat workflow runs apply only pending migrations.
 
-If migrations `0001` or `0002` were previously run manually in the SQL Editor, the migration workflow can replay them safely and register them in Supabase migration history. After this bootstrap, make schema changes only in a new, sequentially named SQL migration. Do not edit an already deployed migration.
+Once the workflow is active, make all schema changes in new migration files and avoid applying schema changes manually in the remote SQL Editor. The first-owner grant below is the one-time exception because it provisions an account-specific role, not schema.
+
+If migrations `0001` or `0002` were previously run manually in the SQL Editor, the migration workflow can replay them safely and register them in Supabase migration history. Keep those existing legacy files in place. For every future schema change, create a timestamped migration with `supabase migration new <descriptive_name>` and commit the generated SQL file. Do not edit an already deployed migration. The workflow applies new files automatically when they reach `main` or `master`.
 
 ## One-time first owner grant
 
-After migration `0003_admin_portal.sql` succeeds, create a HomeOps account for the owner using the normal sign-up page. Then run this once in that project's Supabase SQL Editor, replacing the email with the exact account email:
+After migration `20261102115238_admin_portal.sql` succeeds, create a HomeOps account for the owner using the normal sign-up page. Then run this once in that project's Supabase SQL Editor, replacing the email with the exact account email:
 
 ```sql
 insert into public.app_staff_roles (user_id, role)
