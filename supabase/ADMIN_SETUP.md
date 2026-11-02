@@ -1,18 +1,26 @@
-# Supabase and admin bootstrap
+# Supabase setup
 
-## One-time GitHub Actions setup
+## Apply migrations manually
 
-The workflow at `.github/workflows/supabase-migrations.yml` applies pending SQL migrations when migration files are merged or pushed to `master` or `main`. Add these in the GitHub repository under **Settings → Secrets and variables → Actions**:
+Migrations are applied only when you choose to run the Supabase CLI. Nothing in GitHub applies them automatically.
 
-- **Secret** `SUPABASE_ACCESS_TOKEN`: create a personal access token from the Supabase account that can administer this project.
-- **Secret** `SUPABASE_DB_PASSWORD`: the project's database password. Reset it in Supabase if it is unavailable; do not use a service-role/secret API key here.
-- **Variable** `SUPABASE_PROJECT_ID`: the project reference shown in the Supabase dashboard URL or Project Settings → General.
+Link the local project once (use the project reference from Supabase):
 
-The workflow checks that all three are present, serializes migration runs, links the Supabase CLI to the project, and runs `supabase db push`. It does not run on feature branches; merge the migration to `master` or `main` to deploy it. The CLI migration history makes repeat workflow runs apply only pending migrations.
+```bash
+npx supabase@latest login
+npx supabase@latest link --project-ref <your-project-ref>
+```
 
-Once the workflow is active, make all schema changes in new migration files and avoid applying schema changes manually in the remote SQL Editor. The first-owner grant below is the one-time exception because it provisions an account-specific role, not schema.
+For every feature that changes the schema, create a new timestamped migration, put that feature's SQL in the new file, inspect it, and apply pending migrations:
 
-If migrations `0001` or `0002` were previously run manually in the SQL Editor, the migration workflow can replay them safely and register them in Supabase migration history. Keep those existing legacy files in place. For every future schema change, create a timestamped migration with `supabase migration new <descriptive_name>` and commit the generated SQL file. Do not edit an already deployed migration. The workflow applies new files automatically when they reach `main` or `master`.
+```bash
+npx supabase@latest migration new <feature_name>
+npx supabase@latest db push --linked
+```
+
+The CLI records applied migration versions in Supabase's migration history and skips versions already recorded. Keep one migration file per feature; never reuse a version or edit a migration after it has been applied. Make follow-up changes in another new migration. Commit migration files to the repository so its history remains the source of truth. Avoid direct schema edits in the SQL Editor; the owner grant below is account-specific setup, not a schema migration.
+
+The existing `0001` and `0002` files are legacy migrations and remain in place. They are safe to replay to bootstrap/register if they were previously run manually in SQL Editor. Apply the current admin schema migration using the same `db push --linked` command.
 
 ## One-time first owner grant
 
